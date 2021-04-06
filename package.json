@@ -1,0 +1,22 @@
+{
+  "name": "electron-video",
+  "version": "0.1.0",
+  "author": "your name",
+  "description": "Electron video demo",
+  "main": "main.js",
+  "keywords": [
+    "video",
+    "electron"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "test.app"
+  },
+  "devDependencies": {
+    "electron": "^13.0.0-beta.5",
+    "electron-builder": "^22.10.5"
+  }
+}

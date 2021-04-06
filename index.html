@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Hello World!</title>
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+</head>
+
+<body style="background: white;">
+  <h1>Hello World!</h1>
+  <p>
+    We are using node
+    <script>document.write(process.versions.node)</script>,
+    Chrome
+    <script>document.write(process.versions.chrome)</script>,
+    and Electron
+    <script>document.write(process.versions.electron)</script>.
+  </p>
+
+  <script>
+    const { ipcRenderer } = require("electron");
+    var SpeakerManager = {
+      videoUrl(list) { // 设置播放列表
+        ipcRenderer.send('SpeakerManager', 'videoUrl', list)
+      },
+      videoMute() { // 静音
+        ipcRenderer.send('SpeakerManager', 'videoMute')
+      },
+      videoUnMute() { // 取消静音
+        ipcRenderer.send('SpeakerManager', 'videoUnMute')
+      },
+      videoVolume(num) { // 设置音量
+        ipcRenderer.send('SpeakerManager', 'videoVolume', num)
+      }
+    }
+    window.SpeakerManager = SpeakerManager
+
+    setTimeout(() => {
+      SpeakerManager.videoUrl(['http://vjs.zencdn.net/v/oceans.mp4'])
+    }, 3000)
+
+    setTimeout(() => {
+      SpeakerManager.videoVolume(0.5)
+    }, 6000)
+  </script>
+</body>
+
+</html>

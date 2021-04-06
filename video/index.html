@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>视频播放</title>
+  <style>
+    html,
+    body,
+    #loading,
+    #my-player {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <link href="video-js/video-js.min.css" rel="stylesheet">
+  <script src="video-js/video.min.js"></script>
+</head>
+
+<body>
+  <h1 id="loading">载入中...</h1>
+  <video id="my-player" class="video-js" preload="auto" data-setup='{}'>
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a
+      web browser that
+      <a href="https://videojs.com/html5-video-support/" target="_blank">
+        supports HTML5 video
+      </a>
+    </p>
+  </video>
+  <script>
+    const { ipcRenderer } = require("electron");
+
+    var player = null;
+
+    ipcRenderer.on('videoUrl', (e, list) => {
+      var curr = 0;
+      var options = {
+        "width": "1920px",
+        "height": "1080px",
+        "autoplay": true,
+        "controls": false,
+        "muted": false,
+        "sources": [{
+          src: list[curr],
+          type: 'video/mp4'
+        }],
+      };
+
+      player = videojs('my-player', options, function onPlayerReady() {
+        this.src({ type: 'video/mp4', src: list[curr] });
+        this.load();
+        document.getElementById('loading').style.display = 'none';
+        this.play();
+        this.on('ended', () => {
+          curr++
+          if (curr >= list.length) {
+            curr = 0; //重新循环播放
+          }
+          this.src({ type: 'video/mp4', src: list[curr] });
+          this.load();
+          this.play();
+        });
+      });
+    })
+
+    ipcRenderer.on('videoMute', (e) => {
+      if (player) player.muted(true)
+    })
+
+    ipcRenderer.on('videoUnMute', (e) => {
+      if (player) player.muted(false)
+    })
+
+    ipcRenderer.on('videoVolume', (e, volume) => {
+      if (player) player.volume(volume); //Volume range 0.0 to 1 (0.0, 0.1, 0.2 ...)
+    })
+
+  </script>
+</body>
+
+</html>
